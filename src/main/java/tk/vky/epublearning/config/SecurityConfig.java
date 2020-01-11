@@ -12,8 +12,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import tk.vky.epublearning.config.security.CustomUserDetailsService;
@@ -55,13 +59,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers("/welcome", "/").permitAll().and().formLogin()
-				.loginPage("/login").loginProcessingUrl("/perform_login").defaultSuccessUrl("/dashboard", true)
+		http.csrf().disable().authorizeRequests().antMatchers("/welcome").permitAll();
+		http.authorizeRequests().antMatchers("/userList/**","/af").access("hasRole('ROLE_BF_SHOW_HOME')").and().formLogin()
+				.loginPage("/welcome").loginProcessingUrl("/perform_login").defaultSuccessUrl("/dashboard", true)
 				.failureUrl("/login.html?error=true").usernameParameter("username").passwordParameter("password")
 //				.failureHandler(authenticationFailureHandler())
 				.and().logout().logoutUrl("/perform_logout").deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl("/login").and().exceptionHandling().accessDeniedPage("/accessDenied");
+				.logoutSuccessUrl("/welcome").and().exceptionHandling().accessDeniedPage("/accessDenied");
 	}
+
 
 	@Bean
 	public HttpSessionEventPublisher httpSessionEventPublisher() {

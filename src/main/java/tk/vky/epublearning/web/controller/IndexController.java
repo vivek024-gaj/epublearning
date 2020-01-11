@@ -29,7 +29,7 @@ public class IndexController {
 	}
 	@RequestMapping("/login")
 	public String login(@RequestParam(value = "error", required = false) boolean error, ModelMap model) {
-		return "home/login";
+		return "home/login1";
 	}
 
 	@RequestMapping("/dashboard")
